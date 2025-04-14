@@ -4,21 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\MasterData;
 use Illuminate\Http\Request;
+use App\Models\Servers;
 
 class MasterDataController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function server()
-    {
-        return view('master-data.server.main', ['title' => 'Master Data - Server']);
-    }
-
-    public function infrastruktur()
-    {
-        return view('master-data.infrastruktur/main', ['title' => 'Master Data - Infrastruktur']);
-    }
+    public function index() {}
 
     /**
      * Show the form for creating a new resource.

@@ -1,17 +1,19 @@
 <?php
 
-use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\MasterDataController;
-use App\Http\Controllers\PengajuanController;
+use App\Http\Controllers\ServersController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ManajemenController;
+use App\Http\Controllers\PengajuanController;
+use App\Http\Controllers\MasterDataController;
+use App\Http\Controllers\InfrastrukturController;
 
 // Home Route
 Route::get('/', [DashboardController::class, 'index'])->name('home');
 
 // Master Data
-Route::get('/master-data/server', [MasterDataController::class, 'server'])->name('master-data.server');
-Route::get('/master-data/infrastruktur', [MasterDataController::class, 'infrastruktur'])->name('master-data.infrastruktur');
+Route::resource('/master-data/server', ServersController::class)->names('master-data.server');
+Route::resource('/master-data/infrastruktur', InfrastrukturController::class)->names('master-data.infrastruktur');
 
 // Pengajuan
 Route::get('/pengajuan/jaringan', [PengajuanController::class, 'jaringan'])->name('pengajuan.jaringan');

@@ -7,6 +7,7 @@
   <title>SI-FrIT</title>
   <link rel="shortcut icon" type="image/png" href="{{ asset('assets/images/logos/Si-FRiT-logo.png') }}" />
   <link rel="stylesheet" href="{{ asset('assets/css/styles.min.css') }}" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
 </head>
 
 <body>
