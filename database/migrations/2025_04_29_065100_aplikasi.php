@@ -11,16 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('infrastrukturs', function (Blueprint $table) {
+        Schema::create('aplikasi', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('type'); // Router, Switch, Firewall, Access Point, LAN
-            $table->string('ip_address')->nullable();
-            $table->string('location');
-            $table->boolean('status')->default(1);
             $table->timestamps();
         });
-        
     }
 
     /**
@@ -28,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('infrastrukturs');
+        Schema::dropIfExists('aplikasi');
     }
 };

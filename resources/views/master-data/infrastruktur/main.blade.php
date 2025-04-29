@@ -33,6 +33,7 @@
                     <table id="dataTables" class="table table-striped">
                         <thead>
                             <tr>
+                                <th>No</th>
                                 <th>Name</th>
                                 <th>Type</th>
                                 <th>IP Address</th>
@@ -44,9 +45,10 @@
                         <tbody>
                             @foreach($infrastruktur as $infra)
                             <tr>
+                                <td>{{ $loop->iteration }}</td>
                                 <td>{{ $infra->name }}</td>
                                 <td>{{ $infra->type }}</td>
-                                <td>{{ $infra->ip_address }}</td>
+                                <td>{{ $infra->ip_address ?? 'Tidak butuh IP Address' }}</td>
                                 <td>{{ $infra->location }}</td>
                                 <td>{{ $infra->status ? 'Active' : 'Inactive' }}</td>
                                 <td>
@@ -82,11 +84,11 @@
                         <label for="type" class="form-label">Type</label>
                         <select class="form-control" id="type" name="type" required>
                             <option value="">Select Type</option>
-                            <option value="Server">Server</option>
                             <option value="Router">Router</option>
                             <option value="Switch">Switch</option>
                             <option value="Firewall">Firewall</option>
                             <option value="LAN">LAN</option>
+                            <option value="Access-Point">Access Point</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -136,11 +138,12 @@
                             <option value="Router">Router</option>
                             <option value="Switch">Switch</option>
                             <option value="Firewall">Firewall</option>
+                            <option value="LAN">LAN</option>
                         </select>
                     </div>
                     <div class="mb-3">
                         <label for="edit_ip_address" class="form-label">IP Address</label>
-                        <input type="text" class="form-control" id="edit_ip_address" name="ip_address" required>
+                        <input type="text" class="form-control" id="edit_ip_address" name="ip_address">
                     </div>
                     <div class="mb-3">
                         <label for="edit_location" class="form-label">Location</label>

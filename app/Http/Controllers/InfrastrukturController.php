@@ -76,8 +76,28 @@ class InfrastrukturController extends Controller
      */
     public function update(Request $request, Infrastruktur $infrastruktur)
     {
-        //
+        // Validate incoming request
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'type' => 'required|string',
+            'ip_address' => 'nullable|ip',
+            'location' => 'required|string',
+            'status' => 'required|boolean',
+        ]);
+
+        // Update the infrastructure data
+        $infrastruktur->update([
+            'name' => $request->name,
+            'type' => $request->type,
+            'ip_address' => $request->ip_address,
+            'location' => $request->location,
+            'status' => $request->status,
+        ]);
+
+        // Return a response
+        return redirect()->route('master-data.infrastruktur.index')->with('success', 'Infrastructure updated successfully.');
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -86,9 +106,15 @@ class InfrastrukturController extends Controller
     {
         try {
             $infrastruktur->delete();
-            return response()->json(['success' => true, 'message' => 'Data berhasil dihapus.']);
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil dihapus.'
+            ]);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Gagal menghapus data.'], 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus data.'
+            ], 500);
         }
     }
 }

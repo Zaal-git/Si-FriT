@@ -2,74 +2,53 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pengajuan;
 use Illuminate\Http\Request;
+use App\Models\servers;
+use Illuminate\Validation\Validator;
 
 class PengajuanController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function jaringan()
+    public function index()
     {
-        return view('pengajuan.jaringan.main', ['title' => 'Pengajuan - Jaringan']);
+        $servers = servers::latest()->get();
+
+        $totalPengajuan = $servers->count();
+        $pengajuan = $servers->where('status', 1)->count();
+        $approved = $servers->where('status', 3)->count(); // Terpakai
+        $pending = $servers->where('status', 2)->count();  // Ajukan
+        $rejected = $servers->where('status', 4)->count(); // contoh status ditolak
+
+
+        return view('pengajuan.server.main', compact(
+            'servers',
+            'totalPengajuan',
+            'approved',
+            'pending',
+            'rejected'
+        ));
     }
 
-    public function server()
-    {
-        return view('pengajuan.server.main', ['title' => 'Pengajuan - Server']);
-    }
-
-    public function aplikasi()
-    {
-        return view('pengajuan.aplikasi.main', ['title' => 'Pengajuan - Aplikasi']);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'server_id' => 'required|exists:servers,id',
+            'lokasi_pengajuan' => 'required|max:255'
+        ]);
+
+        $server = servers::findOrFail($request->server_id);
+
+        $server->update([
+            'location' => $request->lokasi_pengajuan,
+            'status' => 2
+        ]);
+
+        return redirect()->route('pengajuan.server.index')
+            ->with('success', 'Pengajuan berhasil dikirim!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Pengajuan $pengajuan)
+    public function show($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Pengajuan $pengajuan)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Pengajuan $pengajuan)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Pengajuan $pengajuan)
-    {
-        //
+        $server = servers::findOrFail($id);
+        return response()->json($server);
     }
 }

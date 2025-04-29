@@ -31,6 +31,7 @@
                         <table id="dataTables" class="table table-striped">
                             <thead>
                                 <tr>
+                                    <th>No</th>
                                     <th>Nama Server</th>
                                     <th>IP Address</th>
                                     <th>Lokasi</th>
@@ -41,6 +42,7 @@
                             <tbody>
                                 @foreach($servers as $server)
                                 <tr>
+                                    <td>{{ $loop->iteration }}</td>
                                     <td>{{ $server->name }}</td>
                                     <td>{{ $server->ip_address }}</td>
                                     <td>{{ $server->location }}</td>

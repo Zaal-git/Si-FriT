@@ -7,6 +7,7 @@ use App\Http\Controllers\ManajemenController;
 use App\Http\Controllers\PengajuanController;
 use App\Http\Controllers\MasterDataController;
 use App\Http\Controllers\InfrastrukturController;
+use App\Http\Controllers\JaringanController;
 
 // Home Route
 Route::get('/', [DashboardController::class, 'index'])->name('home');
@@ -16,8 +17,8 @@ Route::resource('/master-data/server', ServersController::class)->names('master-
 Route::resource('/master-data/infrastruktur', InfrastrukturController::class)->names('master-data.infrastruktur');
 
 // Pengajuan
-Route::get('/pengajuan/jaringan', [PengajuanController::class, 'jaringan'])->name('pengajuan.jaringan');
-Route::get('/pengajuan/server', [PengajuanController::class, 'server'])->name('pengajuan.server');
+Route::resource('/pengajuan/jaringan', JaringanController::class)->names('pengajuan.jaringan');
+Route::resource('/pengajuan/server', PengajuanController::class)->names('pengajuan.server');
 Route::get('/pengajuan/aplikasi', [PengajuanController::class, 'aplikasi'])->name('pengajuan.aplikasi');
 
 // Manajemen
