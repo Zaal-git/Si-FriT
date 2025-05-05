@@ -15,7 +15,9 @@ return new class extends Migration {
             $table->string('location'); // Lokasi server
             $table->integer('memory_gb')->nullable(); // opsional
             $table->integer('storage_gb')->nullable(); // opsional
-            $table->boolean('status')->default(1); // Status (1 = Aktif, 0 = Nonaktif)
+            $table->integer('status')->default(1); // Status (1 = Aktif, 0 = Nonaktif)
+            $table->string('lokasi_pengaju')->nullable(); // Status (1 = Aktif, 0 = Nonaktif)
+            $table->string('pengaju')->nullable(); // Status (1 = Aktif, 0 = Nonaktif)
             $table->timestamps(); // Kolom created_at dan updated_at
         });
     }

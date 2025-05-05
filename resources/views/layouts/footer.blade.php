@@ -2,9 +2,9 @@
 </div> {{-- Body Wrapper --}}
 </div> {{-- Page Wrapper --}}
 
-<script src="{{ asset('assets/libs/jquery/dist/jquery.min.js') }}"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{{ asset('assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
-<script src="{{ asset('assets/libs/apexcharts/dist/apexcharts.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{{ asset('assets/libs/simplebar/dist/simplebar.js') }}"></script>
 <script src="{{ asset('assets/js/sidebarmenu.js') }}"></script>
 <script src="{{ asset('assets/js/app.min.js') }}"></script>
@@ -17,6 +17,9 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
+
+
+
 $(document).ready(function() {
     // Init DataTables
     $('#dataTables').DataTable({
@@ -58,23 +61,26 @@ $(document).ready(function() {
 
     // ========= EDIT SERVER =========
     $('.editServer').on('click', function() {
-        var id = $(this).data('id');
-        $.ajax({
-            url: '/master-data/server/' + id + '/edit',
-            type: 'GET',
-            success: function(response) {
-                $('#edit_id').val(response.id);
-                $('#edit_name').val(response.name);
-                $('#edit_ip_address').val(response.ip_address);
-                $('#edit_location').val(response.location);
-                $('#edit_status').val(response.status);
-                $('#editServerForm').attr('action', '/master-data/server/' + response.id);
-            },
-            error: function() {
-                alert('Gagal mengambil data Server.');
-            }
-        });
+    var id = $(this).data('id');
+    $.ajax({
+        url: '/master-data/server/' + id + '/edit',
+        type: 'GET',
+        success: function(response) {
+            $('#edit_id').val(response.id);
+            $('#edit_name').val(response.name);
+            $('#edit_ip_address').val(response.ip_address);
+            $('#edit_location').val(response.location);
+            $('#edit_memory_gb').val(response.memory_gb);        // ✅ Tambahan
+            $('#edit_storage_gb').val(response.storage_gb);      // ✅ Tambahan
+            $('#edit_status').val(response.status);
+            $('#editServerForm').attr('action', '/master-data/server/' + response.id);
+        },
+        error: function() {
+            alert('Gagal mengambil data Server.');
+        }
     });
+});
+
 
     // ========= DELETE (INFRA & SERVER) =========
     let deleteType = null;
@@ -202,21 +208,19 @@ function showDetail(id) {
 }
 
 
-document.addEventListener('DOMContentLoaded', function() {
-    var ajukanModal = document.getElementById('ajukanModal');
-    if (ajukanModal) {
-        ajukanModal.addEventListener('show.bs.modal', function(event) {
-            var button = event.relatedTarget;
-            var id = button.getAttribute('data-id');
-            var name = button.getAttribute('data-name');
-            var type = button.getAttribute('data-type');
+document.addEventListener('DOMContentLoaded', function () {
+    const modal = document.getElementById('ajukanModal');
+    modal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const id = button.getAttribute('data-id');
+        const name = button.getAttribute('data-name');
+        const type = button.getAttribute('data-type');
 
-            var modal = this;
-            modal.querySelector('#modal-infrastruktur-id').value = id;
-            modal.querySelector('#modal-name').value = name;
-            modal.querySelector('#modal-type').value = type;
-        });
-    }
+        document.getElementById('modal-infrastruktur-id').value = id;
+        document.getElementById('modal-name').value = name;
+        document.getElementById('modal-type').value = type;
+    });
+});
 
     // Inisialisasi tooltip
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
@@ -240,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    $('#ajukanModal').on('show.bs.modal', function (event) {
+    $('#ajukanServerModal').on('show.bs.modal', function (event) {
     var button = $(event.relatedTarget);
     var id = button.data('id');
     var ip = button.data('ip');
@@ -250,8 +254,6 @@ document.addEventListener('DOMContentLoaded', function() {
     modal.find('#ip_address').val(ip);
 });
 
-
-});
 
 const statusLabel = {
     1: 'Draft',
@@ -267,11 +269,70 @@ const statusLabel = {
     document.getElementById('detailNama').innerText = button.getAttribute('data-nama');
     document.getElementById('detailIp').innerText = button.getAttribute('data-ip');
     document.getElementById('detailLokasi').innerText = button.getAttribute('data-lokasi');
+    document.getElementById('detailPengaju').innerText = button.getAttribute('data-pengaju');
+    document.getElementById('detailLokasiPengaju').innerText = button.getAttribute('data-lokasiPengaju');
     document.getElementById('detailStatus').innerText = statusLabel[button.getAttribute('data-status')];
     document.getElementById('detailTanggal').innerText = button.getAttribute('data-tanggal');
   });
 
+   // Menangani klik pada tombol ACC atau Tolak
+   $('#confirmModal').on('show.bs.modal', function (e) {
+    var button = $(e.relatedTarget); // Tombol yang diklik
+    var id = button.data('id');
+    var tipe = button.data('tipe');
+    var status = button.data('status');
+    var nama = button.data('nama');
+    var actionText = button.data('action-text');
+
+    // Menetapkan nilai ke form modal
+    $('#modal-id').val(id);
+    $('#modal-tipe').val(tipe);
+    $('#modal-status').val(status);
+    $('#modal-nama').val(nama);
+    $('#modal-action-text').text('Apakah Anda yakin ingin ' + actionText + ' pengajuan ' + nama + '?');
+});
+
+$('#confirmForm').submit(function(event) {
+    event.preventDefault(); // Mencegah form submit default
+
+    var form = $(this);
+    var url = form.attr('action');
+
+    $.ajax({
+        type: 'POST',
+        url: url,
+        data: form.serialize(),
+        success: function(response) {
+            if (response.success) {
+                // Tindakan setelah sukses, misalnya refresh halaman atau memberi feedback
+                location.reload(); // Untuk me-refresh halaman setelah update status
+            }
+        },
+        error: function() {
+            alert('Terjadi kesalahan saat memproses permintaan.');
+        }
+    });
+});
+
+
+
+
+
+    
+
 </script>
+<script>
+    @if(session('alert'))
+        Swal.fire({
+            icon: '{{ session('alert.type') }}',
+            title: '{{ session('alert.type') == 'success' ? 'Berhasil!' : 'Gagal!' }}',
+            text: '{{ session('alert.message') }}',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    @endif
+</script>
+
 
 </body>
 </html>

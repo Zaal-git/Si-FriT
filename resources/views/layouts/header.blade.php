@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="{{ asset('assets/css/styles.min.css') }}" />
   <link rel="stylesheet" href="  https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.2/css/uikit.min.css  ">
   <link rel="stylesheet" href="  https://cdn.datatables.net/2.2.2/css/dataTables.uikit.css  ">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
     .stat-card {
         transition: all 0.3s ease;

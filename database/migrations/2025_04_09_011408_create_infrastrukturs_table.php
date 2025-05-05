@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('ip_address')->nullable();
             $table->string('location');
             $table->boolean('status')->default(1);
+            $table->string('lokasi_pengajuan')->nullable();
+            $table->string('pengaju')->nullable();
             $table->timestamps();
         });
         

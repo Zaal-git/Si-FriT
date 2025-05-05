@@ -9,51 +9,38 @@
                         <h4 class="card-title">{{ $title }}</h4>
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addServerModal">Tambah Server</button>
                     </div>
-                    @if (session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@endif
-
-@if ($errors->any())
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <ul class="mb-0">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@endif
 
                     <div class="card-body">
                         <table id="dataTables" class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Nama Server</th>
-                                    <th>IP Address</th>
-                                    <th>Lokasi</th>
-                                    <th>Status</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($servers as $server)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $server->name }}</td>
-                                    <td>{{ $server->ip_address }}</td>
-                                    <td>{{ $server->location }}</td>
-                                    <td>{{ $server->status ? 'Aktif' : 'Nonaktif' }}</td>
-                                    <td>
-                                        <button class="btn btn-warning btn-sm editServer" data-id="{{ $server->id }}" data-bs-toggle="modal" data-bs-target="#editServerModal">Edit</button>
-                                        <button class="btn btn-danger btn-sm deleteServer" data-id="{{ $server->id }}">Hapus</button>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
+                          <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama Server</th>
+                                <th>IP Address</th>
+                                <th>Lokasi</th>
+                                <th>Memory (GB)</th> {{-- Tambahan --}}
+                                <th>Storage (GB)</th> {{-- Tambahan --}}
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>                        
+                          <tbody>
+                            @foreach($servers as $server)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $server->name }}</td>
+                                <td>{{ $server->ip_address }}</td>
+                                <td>{{ $server->location }}</td>
+                                <td>{{ $server->memory_gb ?? '-' }}</td> {{-- Tambahan --}}
+                                <td>{{ $server->storage_gb ?? '-' }}</td> {{-- Tambahan --}}
+                                <td>{{ $server->status ? 'Aktif' : 'Nonaktif' }}</td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm editServer" data-id="{{ $server->id }}" data-bs-toggle="modal" data-bs-target="#editServerModal">Edit</button>
+                                    <button class="btn btn-danger btn-sm deleteServer" data-id="{{ $server->id }}">Hapus</button>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>                      
                         </table>
                     </div>
                 </div>
@@ -84,6 +71,14 @@
                             <label for="location" class="form-label">Lokasi</label>
                             <input type="text" class="form-control" id="location" name="location" required>
                         </div>
+                        <div class="mb-3">
+                          <label for="memory_gb" class="form-label">Memory (GB)</label>
+                          <input type="number" class="form-control" id="memory_gb" name="memory_gb" min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label for="storage_gb" class="form-label">Storage (GB)</label>
+                            <input type="number" class="form-control" id="storage_gb" name="storage_gb" min="0">
+                        </div>                      
                         <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
                             <select class="form-control" id="status" name="status">
@@ -125,18 +120,26 @@
               <input type="text" class="form-control" id="edit_location" name="location" required>
             </div>
             <div class="mb-3">
+              <label for="edit_memory_gb" class="form-label">Memory (GB)</label>
+              <input type="number" class="form-control" id="edit_memory_gb" name="memory_gb" min="0">
+          </div>
+          <div class="mb-3">
+              <label for="edit_storage_gb" class="form-label">Storage (GB)</label>
+              <input type="number" class="form-control" id="edit_storage_gb" name="storage_gb" min="0">
+          </div>          
+          <div class="mb-3">
               <label for="edit_status" class="form-label">Status</label>
               <select class="form-control" id="edit_status" name="status">
                 <option value="1">Aktif</option>
                 <option value="0">Nonaktif</option>
               </select>
-            </div>
-            <button type="submit" class="btn btn-primary">Update</button>
-          </form>
-        </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Update</button>
+        </form>
       </div>
     </div>
   </div>
+</div>
   
 <!-- Modal Konfirmasi Hapus -->
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
@@ -159,4 +162,24 @@
   
     
 @include('layouts.footer')
-    
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  @if(session('success'))
+      Swal.fire({
+          icon: 'success',
+          title: 'Berhasil!',
+          text: '{{ session('success') }}',
+          timer: 2500,
+          showConfirmButton: false
+      });
+  @endif
+
+  @if(session('alert'))
+      Swal.fire({
+          icon: '{{ session('alert.type') == "success" ? "success" : "error" }}',
+          title: '{{ session('alert.type') == "success" ? "Berhasil!" : "Gagal!" }}',
+          text: '{{ session('alert.message') }}',
+          timer: 2500,
+          showConfirmButton: false
+      });
+  @endif

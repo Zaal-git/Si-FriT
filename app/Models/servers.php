@@ -15,6 +15,10 @@ class Servers extends Model
         'name',
         'ip_address',
         'location',
-        'status'
+        'memory_gb',
+        'storage_gb',
+        'status',
+        'lokasi_pengaju',
+        'pengaju'
     ];
 }

@@ -1,6 +1,6 @@
 <div class="body-wrapper">
-    <header class="app-header">
-      <nav class="navbar navbar-expand-lg navbar-light">
+  <header class="app-header sticky-top bg-white shadow-sm z-3">
+    <nav class="navbar navbar-expand-lg navbar-light">
         <ul class="navbar-nav">
           <li class="nav-item d-block d-xl-none">
             <a class="nav-link sidebartoggler nav-icon-hover" id="headerCollapse" href="javascript:void(0)">
@@ -15,9 +15,10 @@
           </li>
         </ul>
         <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
-          <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
-              <a href="./authentication-login.html" class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
-          </ul>
+          <form action="{{ route('logout') }}" method="POST" class="d-inline">
+            @csrf
+            <button type="submit" class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</button>
+        </form>
         </div>
       </nav>
     </header>

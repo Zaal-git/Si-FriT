@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Infrastruktur;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 class JaringanController extends Controller
 {
@@ -13,9 +15,14 @@ class JaringanController extends Controller
     public function index()
     {
         $infrastrukturs = Infrastruktur::all();
-        return view('pengajuan.jaringan.main', compact('infrastrukturs'));
-    }
+        $unitUsers = []; // Inisialisasi variabel
+        
+        if (auth()->user()->role === 'admin') {
+            $unitUsers = \App\Models\User::where('role', 'unit')->get();
+        }
 
+        return view('pengajuan.jaringan.main', compact('infrastrukturs', 'unitUsers'));
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -28,25 +35,42 @@ class JaringanController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'infrastruktur_id' => 'required|exists:infrastrukturs,id',
-            'lokasi_pengajuan' => 'required|string|max:255',
-        ]);
 
-        // Temukan infrastruktur yang diajukan
-        $infrastruktur = Infrastruktur::findOrFail($request->infrastruktur_id);
+     public function store(Request $request)
+     {
+         $request->validate([
+             'infrastruktur_id' => 'required|exists:infrastrukturs,id',
+         ]);
+     
+         $user = Auth::user();
+         $infrastruktur = Infrastruktur::findOrFail($request->infrastruktur_id);
+         
+         // Data yang akan diupdate
+         $updateData = [
+             'status' => '2',
+             'lokasi_pengajuan' => $user->role === 'unit' ? $user->lokasi : $request->lokasi_pengajuan,
+         ];
+     
+         // Hanya set pengaju jika role adalah unit
+         if ($user->role === 'unit') {
+             $updateData['pengaju'] = $user->name;
+         }
+     
+         $infrastruktur->update($updateData);
+     
+         if ($request->ajax()) {
+             return response()->json([
+                 'success' => true,
+                 'message' => 'Infrastruktur berhasil diajukan'
+             ]);
+         }
+     
+         return redirect('pengajuan/jaringan')->with('alert', [
+             'type' => 'success',
+             'message' => 'Infrastruktur berhasil diajukan'
+         ]);
+     }
 
-        // Update data pengajuan
-        $infrastruktur->update([
-            'lokasi_pengajuan' => $request->lokasi_pengajuan,
-            'status' => '2', // Update status menjadi 2 (sedang diajukan)
-        ]);
-
-        return redirect()->route('pengajuan.jaringan.index')
-            ->with('success', 'Pengajuan berhasil dikirim!');
-    }
 
     /**
      * Display the specified resource.

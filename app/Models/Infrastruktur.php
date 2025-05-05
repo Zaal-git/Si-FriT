@@ -15,6 +15,7 @@ class Infrastruktur extends Model
         'ip_address',
         'location',
         'status',
-        'lokasi_pengajuan'
+        'lokasi_pengajuan',
+        'pengaju'
     ];
 }

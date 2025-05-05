@@ -22,15 +22,7 @@
             </div>
         </div>
     </div>
-
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <iconify-icon icon="clarity:success-standard-line" class="me-2"></iconify-icon>
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-
+    
     <div class="row">
         <!-- Statistik Cepat -->
         <div class="col-md-12 mb-4">
@@ -70,7 +62,7 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <h6 class="text-muted mb-2">Pengajuan
+                                    <h6 class="text-muted mb-2">Pengajuan</h6>
                                     <h3 class="mb-0">{{ $pending }}</h3>
                                 </div>
                                 <div class="bg-warning bg-opacity-25 p-3 rounded">
@@ -140,9 +132,9 @@
                                     </td>
                                     <td>
                                         <div class="d-flex flex-column">
-                                            <span class="fw-bold">{{ $pengajuan->tipe_server }}</span>
-                                            <small class="text-muted">CPU: {{ $pengajuan->cpu }}, RAM: {{ $pengajuan->ram }}</small>
-                                        </div>
+                                                <span class="fw-bold">Memory: {{ $pengajuan->memory_gb }} GB</span>
+                                                <small class="text-muted">Storage: {{ $pengajuan->storage_gb }} GB</small>
+                                        </div>                                       
                                     </td>
                                     <td>{{ $pengajuan->location }}</td>
                                     <td>{{ $pengajuan->created_at->format('d M Y') }}</td>
@@ -150,7 +142,7 @@
                                         @if($pengajuan->status == 1)
                                             <button type="button" class="btn btn-primary btn-sm" 
                                                     data-bs-toggle="modal" 
-                                                    data-bs-target="#ajukanModal"
+                                                    data-bs-target="#ajukanServerModal"
                                                     data-id="{{ $pengajuan->id }}"
                                                     data-ip="{{ $pengajuan->ip_address }}"
                                                     data-nama="{{ $pengajuan->nama_server }}">
@@ -166,16 +158,19 @@
                                     </td>             
                                     <td>
                                         <!-- Tombol Detail -->
-                                            <button type="button" class="btn btn-info btn-sm ms-2 text-white" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#detailModal"
-                                            data-nama="{{ $pengajuan->name }}"
-                                            data-ip="{{ $pengajuan->ip_address }}"
-                                            data-lokasi="{{ $pengajuan->location }}"
-                                            data-status="{{ $pengajuan->status }}"
-                                            data-tanggal="{{ $pengajuan->created_at->format('d M Y') }}">
+                                        <button type="button" class="btn btn-info btn-sm ms-2 text-white" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#detailModal"
+                                        data-nama="{{ $pengajuan->name }}"
+                                        data-ip="{{ $pengajuan->ip_address }}"
+                                        data-lokasi="{{ $pengajuan->location }}"
+                                        data-pengaju="{{ $pengajuan->pengaju }}"
+                                        data-lokasiPengaju="{{ $pengajuan->lokasi_pengaju }}"
+                                        data-status="{{ $pengajuan->status }}"
+                                        data-tanggal="{{ $pengajuan->created_at->format('d M Y') }}">
                                         Detail
-                                        </button>    
+                                    </button>
+                                     
                                     </td>                                                      
                                 </tr>
                                 @endforeach
@@ -188,7 +183,7 @@
     </div>
 </div>
 <!-- Modal Ajukan Server -->
-<div class="modal fade" id="ajukanModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="ajukanServerModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <form action="{{ route('pengajuan.server.store') }}" method="POST" id="formAjukanServer">
         @csrf
@@ -204,11 +199,27 @@
               <label class="form-label">IP Address</label>
               <input type="text" class="form-control" id="ip_address" readonly>
             </div>
-  
-            <div class="mb-3">
-              <label class="form-label">Lokasi Pengajuan</label>
-              <input type="text" class="form-control" name="lokasi_pengajuan" required>
-            </div>
+
+            @if($user->role != 'unit')
+                <div class="mb-3">
+                    <label class="form-label">Pengaju</label>
+                    <select name="pengaju" id="pengajuSelect" class="form-select" required>
+                        <option value="">Pilih Pengaju</option>
+                        @foreach($users as $u)
+                            <option value="{{ $u->name }}" data-lokasi="{{ $u->lokasi }}">{{ $u->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Lokasi Pengajuan</label>
+                    <input type="text" class="form-control" name="lokasi_pengajuan" id="lokasiPengajuanInput" readonly required>
+                </div>
+            @else
+                <input type="hidden" name="pengaju" value="{{ $user->name }}">
+                <input type="hidden" name="lokasi_pengajuan" value="{{ $user->lokasi }}">
+            @endif
+
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -231,6 +242,8 @@
             <li class="list-group-item"><strong>Nama Server:</strong> <span id="detailNama"></span></li>
             <li class="list-group-item"><strong>IP Address:</strong> <span id="detailIp"></span></li>
             <li class="list-group-item"><strong>Lokasi:</strong> <span id="detailLokasi"></span></li>
+            <li class="list-group-item"><strong>Pengaju:</strong> <span id="detailPengaju"></span></li>
+            <li class="list-group-item"><strong>Lokasi Pengaju:</strong> <span id="detailLokasiPengaju"></span></li>
             <li class="list-group-item"><strong>Status:</strong> <span id="detailStatus"></span></li>
             <li class="list-group-item"><strong>Tanggal Pengajuan:</strong> <span id="detailTanggal"></span></li>
           </ul>
@@ -253,3 +266,17 @@
    
 
 @include('layouts.footer')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const pengajuSelect = document.getElementById('pengajuSelect');
+        const lokasiInput = document.getElementById('lokasiPengajuanInput');
+
+        if (pengajuSelect && lokasiInput) {
+            pengajuSelect.addEventListener('change', function () {
+                const selectedOption = pengajuSelect.options[pengajuSelect.selectedIndex];
+                const lokasi = selectedOption.getAttribute('data-lokasi');
+                lokasiInput.value = lokasi || '';
+            });
+        }
+    });
+</script>

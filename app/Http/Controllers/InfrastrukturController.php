@@ -51,7 +51,19 @@ class InfrastrukturController extends Controller
             'status' => $request->status,
         ]);
 
-        return redirect()->back()->with('success', 'Infrastructure created successfully.');
+        // Untuk request AJAX
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Infrastruktur berhasil ditambahkan'
+            ]);
+        }
+
+        return redirect()->route('master-data.infrastruktur.index')
+            ->with('alert', [
+                'type' => 'success',
+                'message' => 'Infrastruktur berhasil ditambahkan'
+            ]);
     }
 
 
@@ -94,8 +106,18 @@ class InfrastrukturController extends Controller
             'status' => $request->status,
         ]);
 
-        // Return a response
-        return redirect()->route('master-data.infrastruktur.index')->with('success', 'Infrastructure updated successfully.');
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Infrastruktur berhasil diupdate'
+            ]);
+        }
+
+        return redirect()->route('master-data.infrastruktur.index')
+            ->with('alert', [
+                'type' => 'success',
+                'message' => 'Infrastruktur berhasil diupdate'
+            ]);
     }
 
 
